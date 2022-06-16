@@ -1,0 +1,46 @@
+version: "3.8"
+volumes:
+    db-store:
+    php-fpm-socket:
+services:
+
+    app:
+        build: ./docker/php
+        volumes:
+            - php-fpm-socket:/var/run/php-fpm
+            - ./laravel:/var/www/laravel
+        environment:
+            DB_HOST: db
+            DB_DATABASE: $DB_DATABASE
+            DB_USERNAME: $DB_USERNAME
+            DB_PASSWORD: $DB_PASSWORD
+        depends_on:
+            db:
+                condition: service_healthy
+
+    web:
+        build: ./docker/nginx
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            - php-fpm-socket:/var/run/php-fpm
+            - ./laravel:/var/www/laravel
+
+    db:
+        build: ./docker/postgres
+        volumes:
+            - db-store:/var/lib/postgresql
+            - ./docker/postgres/initdb.d:/docker-entrypoint-initdb.d
+        ports:
+            - 5432:5432
+        environment:
+            DB_DATABASE: $DB_DATABASE
+            DB_USERNAME: $DB_USERNAME
+            DB_PASSWORD: $DB_PASSWORD
+            POSTGRES_PASSWORD: $DB_ROOT_PASSWORD
+        healthcheck:
+            test: ["CMD", "pg_isready", "-U", "postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 10

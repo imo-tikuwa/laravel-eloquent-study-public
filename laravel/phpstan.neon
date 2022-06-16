@@ -1,0 +1,15 @@
+parameters:
+    level: 8
+    checkMissingIterableValueType: false
+    treatPhpDocTypesAsCertain: false
+    paths:
+        - app
+        - bootstrap
+        - config
+        - database
+        - resources/views
+        - routes
+    excludePaths:
+        - ./routes/console.php
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
