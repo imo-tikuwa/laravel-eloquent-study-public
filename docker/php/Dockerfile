@@ -1,3 +1,5 @@
+FROM composer:2 as composer
+
 FROM php:8.1-fpm-buster
 SHELL ["/bin/bash", "-oeux", "pipefail", "-c"]
 
@@ -11,13 +13,13 @@ RUN groupmod -o -g ${GID} www-data && \
     echo "${TZ}" > /etc/timezone && \
     dpkg-reconfigure -f noninteractive tzdata
 
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/laravel
 
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash - && \
     apt-get update && \
-    apt-get -y install git \
+    apt-get -y --no-install-recommends install git \
     libicu-dev \
     libonig-dev \
     libzip-dev \
