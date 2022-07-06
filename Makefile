@@ -3,10 +3,10 @@ up:
 init:
 	docker-compose up -d --build
 	docker-compose exec --user=www-data app cp .env.example .env
-	docker-compose exec --user=www-data app php artisan key:generate
 	docker-compose exec --user=www-data app npm install
 	docker-compose exec --user=www-data app npm run dev
 	docker-compose exec --user=www-data app composer install
+	docker-compose exec --user=www-data app php artisan key:generate
 
 start:
 	docker-compose start
